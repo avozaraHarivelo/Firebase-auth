@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <!-- Base application theme. -->
@@ -21,7 +20,6 @@
     <!--Input Theme-->
     <style name="CustomInputStyle" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:background">@color/colorStandardBlack</item>
-        <item name="android:theme">@color/colorDarkBlue</item>
+        <item name="android:textColor">@color/colorDarkBlue</item>
     </style>
-
 </resources>

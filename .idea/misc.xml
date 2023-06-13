@@ -4,12 +4,16 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Big/StudioProjects/Fbapp2/app/src/main/res/drawable/roundbutton.xml" value="0.183" />
-        <entry key="..\:/Users/Big/StudioProjects/Fbapp2/app/src/main/res/layout/activity_main.xml" value="0.10916919959473151" />
-        <entry key="..\:/Users/Big/StudioProjects/Fbapp2/app/src/main/res/layout/activity_reset_password.xml" value="0.1" />
-        <entry key="..\:/Users/Big/StudioProjects/Fbapp2/app/src/main/res/layout/activity_signup.xml" value="0.14947916666666666" />
+        <entry key="..\:/Users/Big/StudioProjects/Fbapp2/app/src/main/res/layout/activity_account.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/Big/StudioProjects/Fbapp2/app/src/main/res/layout/activity_login.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/Big/StudioProjects/Fbapp2/app/src/main/res/layout/activity_main.xml" value="0.22" />
+        <entry key="..\:/Users/Big/StudioProjects/Fbapp2/app/src/main/res/layout/activity_reset_password.xml" value="0.25" />
+        <entry key="..\:/Users/Big/StudioProjects/Fbapp2/app/src/main/res/layout/activity_signup.xml" value="0.18" />
+        <entry key="..\:/Users/Big/StudioProjects/Fbapp2/app/src/main/res/layout/app_bar.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Big/StudioProjects/Fbapp2/app/src/main/res/layout/content_reset_password.xml" value="0.10916919959473151" />
         <entry key="..\:/Users/Big/StudioProjects/Fbapp2/app/src/main/res/layout/fragment_first.xml" value="0.10916919959473151" />
         <entry key="..\:/Users/Big/StudioProjects/Fbapp2/app/src/main/res/layout/fragment_second.xml" value="0.10916919959473151" />
+        <entry key="..\:/Users/Big/StudioProjects/Fbapp2/app/src/main/res/menu/menu.xml" value="0.22447916666666667" />
       </map>
     </option>
   </component>
