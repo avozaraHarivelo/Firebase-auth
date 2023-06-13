@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
+        Toolbar toolbar = findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
 
         // Find the TextView by its ID
@@ -47,17 +47,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_setting:
-                //settings
+        // select an option
+        if (item.getItemId() == R.id.action_setting) {//settings
 
-                Intent settings = new Intent(this, AccountActivity.class);
-                startActivity(settings);
-                break;
-
-            default:
-                // select an option
-
+            Intent settings = new Intent(this, AccountActivity.class);
+            startActivity(settings);
         }
         return super.onOptionsItemSelected(item);
     }
