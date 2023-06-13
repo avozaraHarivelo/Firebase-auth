@@ -13,16 +13,19 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 
-
 public class AccountActivity extends AppCompatActivity {
     private Button changeEmail;
     private Button changePassword;
     private Button sendEmail;
     private Button remove;
-    private EditText oldEmail, newEmail, password, newPassword;
+    private EditText oldEmail;
+    private EditText newEmail;
+    private EditText password;
+    private EditText newPassword;
     private ProgressBar progressBar;
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth auth;
+    private FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,31 +35,45 @@ public class AccountActivity extends AppCompatActivity {
         toolbar.setTitle(getString(R.string.app_name));
         setSupportActionBar(toolbar);
 
-        //get firebase auth instance
+        initializeViews();
+
         auth = FirebaseAuth.getInstance();
-        //get current user
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        user = auth.getCurrentUser();
         authListener = firebaseAuth -> {
-            FirebaseUser user1 = firebaseAuth.getCurrentUser();
-            if (user1 == null) {
-                startActivity(new Intent(AccountActivity.this, LoginActivity.class));
-                finish();
+            FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+            if (currentUser == null) {
+                navigateToLogin();
             }
         };
+
         Button btnChangeEmail = findViewById(R.id.change_email_button);
-        Button btnSendResetEmail =  findViewById(R.id.sending_pass_reset_button);
-        Button btnRemoveUser =  findViewById(R.id.remove_user_button);
+        Button btnSendResetEmail = findViewById(R.id.sending_pass_reset_button);
+        Button btnRemoveUser = findViewById(R.id.remove_user_button);
+        Button signOut = findViewById(R.id.sign_out);
+
+        setVisibilityOfViews();
+
+        btnChangeEmail.setOnClickListener(v -> showChangeEmailViews());
+        changeEmail.setOnClickListener(v -> changeEmail());
+        btnSendResetEmail.setOnClickListener(v -> showResetPasswordViews());
+        sendEmail.setOnClickListener(v -> sendPasswordResetEmail());
+        btnRemoveUser.setOnClickListener(v -> removeUser());
+        signOut.setOnClickListener(v -> signOut());
+    }
+
+    private void initializeViews() {
         changeEmail = findViewById(R.id.changeEmail);
         changePassword = findViewById(R.id.changePass);
         sendEmail = findViewById(R.id.send);
         remove = findViewById(R.id.remove);
-        Button signOut = findViewById(R.id.sign_out);
-
         oldEmail = findViewById(R.id.old_email);
         newEmail = findViewById(R.id.new_email);
         password = findViewById(R.id.password);
         newPassword = findViewById(R.id.newPassword);
+        progressBar = findViewById(R.id.progressBar);
+    }
 
+    private void setVisibilityOfViews() {
         oldEmail.setVisibility(View.GONE);
         newEmail.setVisibility(View.GONE);
         password.setVisibility(View.GONE);
@@ -65,88 +82,91 @@ public class AccountActivity extends AppCompatActivity {
         changePassword.setVisibility(View.GONE);
         sendEmail.setVisibility(View.GONE);
         remove.setVisibility(View.GONE);
-        progressBar = findViewById(R.id.progressBar);
-        if (progressBar != null) {
-            progressBar.setVisibility(View.GONE);
-        }
-        btnChangeEmail.setOnClickListener(v -> {
-            oldEmail.setVisibility(View.GONE);
-            newEmail.setVisibility(View.VISIBLE);
-            password.setVisibility(View.GONE);
-            newPassword.setVisibility(View.GONE);
-            changeEmail.setVisibility(View.VISIBLE);
-            changePassword.setVisibility(View.GONE);
-            sendEmail.setVisibility(View.GONE);
-            remove.setVisibility(View.GONE);
-        });
-        changeEmail.setOnClickListener(v -> {
-            progressBar.setVisibility(View.VISIBLE);
-            if (user != null && !newEmail.getText().toString().trim().equals("")) {
-                user.updateEmail(newEmail.getText().toString().trim())
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(AccountActivity.this, "Email address is updated. Please sign in with new email!", Toast.LENGTH_LONG).show();
-                                signOut();
-                            } else {
-                                Toast.makeText(AccountActivity.this, "Failed to update email!", Toast.LENGTH_LONG).show();
-                            }
-                            progressBar.setVisibility(View.GONE);
-                        });
-            } else if (newEmail.getText().toString().trim().equals("")) {
-                newEmail.setError("Enter email");
-                progressBar.setVisibility(View.GONE);
-            }
-        });
-        btnSendResetEmail.setOnClickListener(v -> {
-            oldEmail.setVisibility(View.VISIBLE);
-            newEmail.setVisibility(View.GONE);
-            password.setVisibility(View.GONE);
-            newPassword.setVisibility(View.GONE);
-            changeEmail.setVisibility(View.GONE);
-            changePassword.setVisibility(View.GONE);
-            sendEmail.setVisibility(View.VISIBLE);
-            remove.setVisibility(View.GONE);
-        });
-        sendEmail.setOnClickListener(v -> {
-            progressBar.setVisibility(View.VISIBLE);
-            if (!oldEmail.getText().toString().trim().equals("")) {
-                auth.sendPasswordResetEmail(oldEmail.getText().toString().trim())
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(AccountActivity.this, "Reset password. email is sent!", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(AccountActivity.this, "Failed to send reset email!", Toast.LENGTH_SHORT).show();
-                            }
-                            progressBar.setVisibility(View.GONE);
-                        });
-            } else {
-                oldEmail.setError("Enter email");
-                progressBar.setVisibility(View.GONE);
-            }
-        });
-
-        btnRemoveUser.setOnClickListener(v -> {
-            progressBar.setVisibility(View.VISIBLE);
-            if (user != null) {
-                user.delete()
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(AccountActivity.this, "Your profile is deleted:( Create a account now!", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(AccountActivity.this, SignupActivity.class));
-                                finish();
-                            } else {
-                                Toast.makeText(AccountActivity.this, "Failed to delete your account!", Toast.LENGTH_SHORT).show();
-                            }
-                            progressBar.setVisibility(View.GONE);
-                        });
-            }
-        });
-        signOut.setOnClickListener(v -> signOut());
-
+        progressBar.setVisibility(View.GONE);
     }
 
-    //sign out method
-    public void signOut() {
+    private void navigateToLogin() {
+        startActivity(new Intent(AccountActivity.this, LoginActivity.class));
+        finish();
+    }
+
+    private void showChangeEmailViews() {
+        oldEmail.setVisibility(View.GONE);
+        newEmail.setVisibility(View.VISIBLE);
+        password.setVisibility(View.GONE);
+        newPassword.setVisibility(View.GONE);
+        changeEmail.setVisibility(View.VISIBLE);
+        changePassword.setVisibility(View.GONE);
+        sendEmail.setVisibility(View.GONE);
+        remove.setVisibility(View.GONE);
+    }
+
+    private void changeEmail() {
+        progressBar.setVisibility(View.VISIBLE);
+        if (user != null && !newEmail.getText().toString().trim().equals("")) {
+            user.updateEmail(newEmail.getText().toString().trim())
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(AccountActivity.this, "L'adresse e-mail est mise à jour. Veuillez vous connecter avec un nouvel e-mail !", Toast.LENGTH_LONG).show();
+                            signOut();
+                        } else {
+                            Toast.makeText(AccountActivity.this, "Échec de la mise à jour de l'e-mail !", Toast.LENGTH_LONG).show();
+                        }
+                        progressBar.setVisibility(View.GONE);
+                    });
+        } else if (newEmail.getText().toString().trim().equals("")) {
+            newEmail.setError("Entrez l'e-mail");
+            progressBar.setVisibility(View.GONE);
+        }
+    }
+
+    private void showResetPasswordViews() {
+        oldEmail.setVisibility(View.VISIBLE);
+        newEmail.setVisibility(View.GONE);
+        password.setVisibility(View.GONE);
+        newPassword.setVisibility(View.GONE);
+        changeEmail.setVisibility(View.GONE);
+        changePassword.setVisibility(View.GONE);
+        sendEmail.setVisibility(View.VISIBLE);
+        remove.setVisibility(View.GONE);
+    }
+
+    private void sendPasswordResetEmail() {
+        progressBar.setVisibility(View.VISIBLE);
+        if (!oldEmail.getText().toString().trim().equals("")) {
+            auth.sendPasswordResetEmail(oldEmail.getText().toString().trim())
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(AccountActivity.this, "Réinitialiser le mot de passe. le mail est envoyé !", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(AccountActivity.this, "Échec de l'envoi de l'e-mail de réinitialisation !", Toast.LENGTH_SHORT).show();
+                        }
+                        progressBar.setVisibility(View.GONE);
+                    });
+        } else {
+            oldEmail.setError("Entrez l'e-mail");
+            progressBar.setVisibility(View.GONE);
+        }
+    }
+
+    private void removeUser() {
+        progressBar.setVisibility(View.VISIBLE);
+        if (user != null) {
+            user.delete()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(AccountActivity.this, "Votre profil est supprimé :( Créez un compte maintenant !", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(AccountActivity.this, SignupActivity.class));
+                            finish();
+                        } else {
+                            Toast.makeText(AccountActivity.this, "Échec de la suppression de votre compte !", Toast.LENGTH_SHORT).show();
+                        }
+                        progressBar.setVisibility(View.GONE);
+                    });
+        }
+    }
+
+    private void signOut() {
         auth.signOut();
     }
 
