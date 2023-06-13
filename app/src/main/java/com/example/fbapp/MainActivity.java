@@ -5,10 +5,18 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class MainActivity extends AppCompatActivity {
+
+
+    TextView textViewUUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +25,17 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
+
+        // Find the TextView by its ID
+        textViewUUID = findViewById(R.id.textViewUUID);
+
+        // Get the current user and set the UUID in the TextView
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String userUUID = currentUser.getUid();
+            String text = "utilisateur UUID: " + userUUID;
+            textViewUUID.setText(text);
+        }
     }
 
     @Override
@@ -28,8 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId())
-        {
+        switch (item.getItemId()) {
             case R.id.action_setting:
                 //settings
 
