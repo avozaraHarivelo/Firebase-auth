@@ -26,8 +26,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColorHint="@color/colorPink"
-            app:passwordToggleEnabled="true">
+            android:textColorHint="@color/colorPink">
 
             <EditText
                 android:id="@+id/email"
